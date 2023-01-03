@@ -6,6 +6,7 @@
     - [What is Continuous Integration?](#what-is-continuous-integration)
     - [CI Workflow](#ci-workflow)
     - [Continuous Integration in the Real World](#continuous-integration-in-the-real-world)
+    - [Common Best Practices of CI/CD](#common-best-practices-of-cicd)
 - [Prerequisites](#prerequisites)
 
 
@@ -35,3 +36,34 @@ On the other hand, is Continuous Delivery which ensures that software checked in
 To emphasize a typical CI pipeline further, let us explore the diagram below:
 
 ![CI Pipeline](https://www.darey.io/wp-content/uploads/2021/07/CI-Pipeline-Regular.png)
+
+- <b>Version Control</b>: This is the stage where developers commit their code to the version control system after they have tested their code locally.
+
+- <b>Build</b>: Depending on the type of language or technology used, we might need to build the code into binary executables for compiled languages or just package the code together with all necessary dependencies for interpreted languages.
+
+- <b>Unit Test</b>: Unit tests that have been developed by the developers are run on the code. This is done to ensure that the code is working as expected. Depending on how the CI job is configured, the entire pipeline may fail if part of the tests fails, and developers will have to fix this failure before starting the pipeline again. A job is a phase in the pipeline and since Unit Test is a phase in the pipeline, it is called a job.
+
+- <b>Deploy</b>: Once the tests are passed, the next phase is to deploy the compiled or packaged code into an artifact repository. This is where all the various versions of code are stored. This is also where the CI tool will have to pick up the code from this location to proceed with the remaining parts of the pipeline.
+
+- <b>Auto Test</b>: Apart from Unit testing, there are many other kinds of tests that are required to analyze the quality of code and determine how vulnerable the software will be to external or internal attacks. These tests must be automated, and there can be multiple environments created to fulfill different test requirements. For example, a server dedicated to Integration Testing will have the code deployed there to conduct integration tests. Once that passes, there can be other sub-layers in the testing phase to which the code will be deployed, to conduct further tests. Such is User Acceptance Testing (UAT), and another can be Penetration Testing. These servers will be named according to what they have been designed to do in those environments. A UAT server is generally used for UAT, SIT server is for Systems Integration Testing, PEN Server is for Penetration Testing and they can be named whatever the naming style or convention in which the team is used. An environment does not necessarily have to reside on one single server. In most cases, it might be a stack as you have defined in your Ansible Inventory. All the servers in the inventory/dev are considered as Dev Environment. The same goes for inventory/stage (Staging Environment) inventory/preprod (Pre-production environment), inventory/prod (Production environment), etc. So, it is all down to naming convention as agreed and used company or team-wide.
+
+- <b>Deploy to production</b>: Once all the tests have been passed, and the release manager has approved the release, the code is deployed to the production environment. This is an ideal Continuous Delivery Pipeline. If the entire process is automated, it is called a Continuous Deployment Pipeline. This is because the cycle will be repeated, and every time there is a code commit and push, it causes the pipeline to trigger, and the loop continues over and over again.
+
+- <b>Measure and Validate</b>: This are where real users are interacting with the application and feedback is collected for further improvements and bug fixes. 
+
+
+### Common Best Practices of CI/CD
+There are principles that define a reliable and robust CI/CD pipeline. These principles are:
+- Maintain a code repository.
+- Automate the build process.
+- Make the build self-testing.
+- Everyone commits to the baseline every day.
+- Every commit (to baseline) should be built.
+- Keep the build fast.
+- Test in a clone of the production environment.
+- Make it easy to get the latest deliverables.
+- Everyone can see what’s happening and the results of the latest build.
+- Automate deployment. This should be done if you're confident enough in your CI/CD pipeline and willing to go for a fully automated continuous deployment.
+
+Many metrics must be determined and observed here. We will quickly go through 13 metrics that must be determined and observed in a CI/CD pipeline. 
+
