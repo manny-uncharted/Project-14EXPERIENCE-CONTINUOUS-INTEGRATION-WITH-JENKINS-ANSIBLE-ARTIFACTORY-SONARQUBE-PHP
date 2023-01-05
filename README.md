@@ -9,6 +9,7 @@
     - [Common Best Practices of CI/CD](#common-best-practices-of-cicd)
     - [Devops Success Metrics](#devops-success-metrics)
 - [Prerequisites](#prerequisites)
+- [Simulating a typical CI/CD Pipeline for a PHP based application](#simulating-a-typical-ci-cd-pipeline-for-a-php-based-application)
 
 
 ## Introduction
