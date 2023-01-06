@@ -10,6 +10,7 @@
     - [Devops Success Metrics](#devops-success-metrics)
 - [Prerequisites](#prerequisites)
 - [Simulating a typical CI/CD Pipeline for a PHP based application](#simulating-a-typical-ci-cd-pipeline-for-a-php-based-application)
+    - [Setting up the environment](#setting-up-the-environment)
 
 
 ## Introduction
@@ -121,4 +122,8 @@ As part of an ongoing infrastructure development with Ansible from our previous 
 
 ![CI/CD Pipeline](https://www.darey.io/wp-content/uploads/2021/07/CI_CD-Pipeline-For-PHP-ToDo-Application.png)
 
-Note: It is important to know that both Tooling and TODO web applications are based on an interpreted (scripting) language which is PHP. This means that, it can be deployed directly onto a server and will work without compiling the code to a machine language.
+<b>Note</b>: It is important to know that both Tooling and TODO web applications are based on an interpreted (scripting) language which is PHP. This means that it can be deployed directly onto a server and will work without compiling the code to a machine language.
+
+The challenge behind this approach is, it would be difficult to package and version the software for different releases. And so, in this project, we will be using a different approach for releases, rather than downloading directly from git, we will be using Ansible's 'uri module' to download the latest release from GitHub.
+
+### Setting up the Environment
