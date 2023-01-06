@@ -112,3 +112,13 @@ It might be common after a deployment to see major changes in the usage of speci
 These are the major metrics that any DevOps team should track and monitor to understand how well CI/CD process is established and how it helps to deliver quality application to the users.
 
 
+## Prerequisites
+-
+
+## Simulating a typical CI/CD Pipeline for a PHP based application
+
+As part of an ongoing infrastructure development with Ansible from our previous projects. Here we will be creating a pipeline that simulates continuous integration and delivery. The target end-to-end CI/CD pipeline is shown below:
+
+![CI/CD Pipeline](https://www.darey.io/wp-content/uploads/2021/07/CI_CD-Pipeline-For-PHP-ToDo-Application.png)
+
+Note: It is important to know that both Tooling and TODO web applications are based on an interpreted (scripting) language which is PHP. This means that, it can be deployed directly onto a server and will work without compiling the code to a machine language.
