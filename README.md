@@ -128,3 +128,9 @@ The challenge behind this approach is, it would be difficult to package and vers
 
 ### Setting up the Environment
 This project is partly a continuation of your Ansible work, so simply add and subtract based on the new setup in this project. It will require a lot of servers to simulate all the different environments from dev/ci all the way to production. This will be quite a lot of servers altogether (But you don’t have to create them all at once. Only create servers required for an environment you are working with at the moment. For example, when doing deployments for development, do not create servers for integration, pentest, or production yet).
+
+To get started we would focus on the following environments:
+
+- CI
+- Development (Dev)
+- Pentest
