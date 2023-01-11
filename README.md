@@ -136,3 +136,10 @@ To get started we would focus on the following environments:
 - Pentest
 
 Both SIT – For System Integration Testing and UAT – User Acceptance Testing do not require a lot of extra installation or configuration. They are basically the webservers holding our applications. But Pentest – For Penetration testing is where we will conduct security related tests, so some other tools and specific configurations will be needed. In some cases, it will also be used for Performance and Load testing. Otherwise, that can also be a separate environment on its own. It all depends on decisions made by the company and the team running the show.
+
+What we want to achieve, is having Nginx to serve as a reverse proxy for our sites and tools. Each environment setup is represented in the below table and diagrams.
+
+![CI](https://www.darey.io/wp-content/uploads/2021/07/Environment-setup.png)
+
+CI Environment
+![CI environment](image.png)
