@@ -11,6 +11,9 @@
 - [Prerequisites](#prerequisites)
 - [Simulating a typical CI/CD Pipeline for a PHP based application](#simulating-a-typical-ci-cd-pipeline-for-a-php-based-application)
     - [Setting up the environment](#setting-up-the-environment)
+    - [CI Environment](#ci-environment)
+    - [Other Environments from Lower to Higher](#other-environments-from-lower-to-higher)
+    - [DNS Requirements](#dns-requirements)
 
 
 ## Introduction
@@ -141,5 +144,17 @@ What we want to achieve, is having Nginx to serve as a reverse proxy for our sit
 
 ![CI](https://www.darey.io/wp-content/uploads/2021/07/Environment-setup.png)
 
-CI Environment
-![CI environment](image.png)
+
+#### CI Environment
+![CI environment](https://www.darey.io/wp-content/uploads/2021/07/Project-14-CI-Environment.png)
+
+
+#### Other Environments from Lower to Higher
+![Other Environments](https://www.darey.io/wp-content/uploads/2021/07/Project-14-Pentest-Environment.png)
+
+
+#### DNS Requirements
+- Make DNS entries to create a subdomain for each environment. Assuming our main domain is "test.io"
+
+We should have a subdomains list like this:
+
