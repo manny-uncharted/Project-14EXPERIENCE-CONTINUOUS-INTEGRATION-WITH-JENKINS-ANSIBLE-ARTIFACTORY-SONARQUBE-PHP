@@ -14,6 +14,7 @@
     - [CI Environment](#ci-environment)
     - [Other Environments from Lower to Higher](#other-environments-from-lower-to-higher)
     - [DNS Requirements](#dns-requirements)
+- [Ansible Inventory](#ansible-inventory)
 
 
 ## Introduction
@@ -158,3 +159,34 @@ What we want to achieve, is having Nginx to serve as a reverse proxy for our sit
 
 We should have a subdomains list like this:
 
+
+| Server | Domain |
+| ------ | ------ |
+| Jenkins | https://ci.infradev.test.io|
+| Sonarqube | https://sonar.infradev.test.io|
+| Artifactory | https://artifactory.infradev.test.io|
+| Production tooling | https://tooling.test.io|
+| Pre-production tooling | https://tooling.preprod.test.io|
+| Pentest tooling | https://tooling.pentest.test.io|
+| UAT tooling | https://tooling.uat.test.io|
+| SIT tooling | https://tooling.sit.test.io|
+| Development tooling | https://tooling.dev.test.io|
+| Production TODO-webapp | https://todo.test.io|
+| Pre-production TODO-webapp | https://todo.preprod.test.io|
+| Pentest TODO-webapp | https://todo.pentest.test.io|
+| UAT TODO-webapp | https://todo.uat.test.io|
+| SIT TODO-webapp | https://todo.sit.test.io|
+| Development TODO-webapp | https://todo.dev.test.io|
+
+
+### Ansible Inventory
+Our Ansible inventory should look like this:
+```
+├── ci
+├── dev
+├── pentest
+├── pre-prod
+├── prod
+├── sit
+└── uat
+```
