@@ -193,7 +193,7 @@ Our Ansible inventory folder should look like this:
 ```
 
 Results:
-![Ansible Inventory](img/ansible-inventory.png)
+![Ansible Inventory](img/ansible-inventory-structure.png)
 
 #### Inventory files
 Our ansible inventory files for each environment should look like this:
