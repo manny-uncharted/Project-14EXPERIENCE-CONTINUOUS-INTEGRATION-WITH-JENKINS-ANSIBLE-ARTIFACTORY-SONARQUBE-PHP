@@ -213,3 +213,54 @@ Create an inventory file for the CI environment. This will be used to access Jen
 [artifact_repository]
 <Artifact_repository-Private-IP-Address>
 ```
+
+Results:
+![CI Inventory](img/ci-inventory.png)
+
+##### Development Environment Inventory File
+Create an inventory file for the Development environment. This will be used to access Nginx, TODO-webapp and Tooling. The inventory file should look like this:
+```yaml
+[tooling]
+<Tooling-Web-Server-Private-IP-Address>
+
+[todo]
+<Todo-Web-Server-Private-IP-Address>
+
+[nginx]
+<Nginx-Private-IP-Address>
+
+[db:vars]
+ansible_user=ec2-user
+ansible_python_interpreter=/usr/bin/python
+
+[db]
+<DB-Server-Private-IP-Address>
+```
+
+Results:
+![Dev Inventory](img/dev-inventory.png)
+
+##### Pentest Environment Inventory File
+Create an inventory file for the Pentest environment. This will be used to access Nginx, TODO-webapp and Tooling. The inventory file should look like this:
+```yaml
+[pentest:children]
+pentest-todo
+pentest-tooling
+
+[pentest-todo]
+<Pentest-for-Todo-Private-IP-Address>
+
+[pentest-tooling]
+<Pentest-for-Tooling-Private-IP-Address>
+```
+
+Results:
+![Pentest Inventory](img/pentest-inventory.png)
+
+
+<b><h4>Note</h4></b>
+You will notice that in the pentest inventory file, we have introduced a new concept pentest:children This is because, we want to have a group called pentest which covers Ansible execution against both pentest-todo and pentest-tooling simultaneously. But at the same time, we want the flexibility to run specific Ansible tasks against an individual group.
+The db group has a slightly different configuration. It uses a RedHat/Centos Linux distro. Others are based on Ubuntu (in this case user is ubuntu). Therefore, the user required for connectivity and path to python interpreter are different. If all your environment is based on Ubuntu, you may not need this kind of set up. Totally up to you how you want to do this. Whatever works for you is absolutely fine in this scenario.
+This makes us to introduce another Ansible concept called group_vars. With group vars, we can declare and set variables for each group of servers created in the inventory file.
+
+For example, If there are variables we need to be common between both pentest-todo and pentest-tooling, rather than setting these variables in many places, we can simply use the group_vars for pentest. Since in the inventory file it has been created as pentest:children Ansible recognizes this and simply applies that variable to both children.
