@@ -15,7 +15,8 @@
     - [Other Environments from Lower to Higher](#other-environments-from-lower-to-higher)
     - [DNS Requirements](#dns-requirements)
 - [Ansible Inventory](#ansible-inventory)
-
+    - [Inventory Files](#inventory-files)
+        - [CI Environment Inventory File](#ci-environment-inventory-file)
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -193,3 +194,22 @@ Our Ansible inventory folder should look like this:
 
 Results:
 ![Ansible Inventory](img/ansible-inventory.png)
+
+#### Inventory files
+Our ansible inventory files for each environment should look like this:
+
+##### CI Environment Inventory File
+Create an inventory file for the CI environment. This will be used to access Jenkins, Nginx, Artifact Repository and Sonarqube. The inventory file should look like this:
+```yaml
+[jenkins]
+<Jenkins-Private-IP-Address>
+
+[nginx]
+<Nginx-Private-IP-Address>
+
+[sonarqube]
+<SonarQube-Private-IP-Address>
+
+[artifact_repository]
+<Artifact_repository-Private-IP-Address>
+```
