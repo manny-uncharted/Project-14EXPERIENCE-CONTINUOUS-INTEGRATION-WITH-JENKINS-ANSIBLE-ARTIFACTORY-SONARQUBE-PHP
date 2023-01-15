@@ -180,7 +180,7 @@ We should have a subdomains list like this:
 
 
 ### Ansible Inventory
-Our Ansible inventory should look like this:
+Our Ansible inventory folder should look like this:
 ```
 ├── ci
 ├── dev
@@ -190,3 +190,6 @@ Our Ansible inventory should look like this:
 ├── sit
 └── uat
 ```
+
+Results:
+![Ansible Inventory](img/ansible-inventory.png)
