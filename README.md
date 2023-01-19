@@ -17,6 +17,8 @@
 - [Ansible Inventory](#ansible-inventory)
     - [Inventory Files](#inventory-files)
         - [CI Environment Inventory File](#ci-environment-inventory-file)
+- [Running the Ansible Playbook from Jenkins](#running-the-ansible-playbook-from-jenkins)
+
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -264,3 +266,5 @@ The db group has a slightly different configuration. It uses a RedHat/Centos Lin
 This makes us to introduce another Ansible concept called group_vars. With group vars, we can declare and set variables for each group of servers created in the inventory file.
 
 For example, If there are variables we need to be common between both pentest-todo and pentest-tooling, rather than setting these variables in many places, we can simply use the group_vars for pentest. Since in the inventory file it has been created as pentest:children Ansible recognizes this and simply applies that variable to both children.
+
+
