@@ -268,3 +268,10 @@ This makes us to introduce another Ansible concept called group_vars. With group
 For example, If there are variables we need to be common between both pentest-todo and pentest-tooling, rather than setting these variables in many places, we can simply use the group_vars for pentest. Since in the inventory file it has been created as pentest:children Ansible recognizes this and simply applies that variable to both children.
 
 
+### Running the Ansible Playbook from Jenkins
+
+Now that you have a broad overview of a typical jenkins pipeline. We need to get the actual Ansible deployment to work by:
+
+- Installing Ansible on Jenkins
+- Installing Ansible plugin in Jenkins UI.
+- Creating a Jenkinsfile from scratch.
