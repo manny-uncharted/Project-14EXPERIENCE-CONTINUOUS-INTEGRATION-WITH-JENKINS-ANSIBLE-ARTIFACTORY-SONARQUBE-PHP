@@ -286,3 +286,29 @@ Artifactory is a product by JFrog that serves as a binary repository manager. Th
 
 #### Configuring Ansible for Jenkins Deployment
 Prior to this all the previous projects have involved launching ansible commands manually from a CLI. Now with jenkins, we will start running Ansible from Jenkins UI.
+
+To get started on this:
+
+- Go to our Jenkins URL
+    ```
+    https://<public-ip-address>:8080
+    ```
+
+    - Login with the credentials we created earlier
+
+    Results:
+    ![Jenkins Login](img/jenkins-login.png)
+
+- Install & Open Blue Ocean Jenkins Plugin
+    - Click on Manage Jenkins
+    - Click on Manage Plugins
+    - Search for Blue Ocean
+    - Click on Install without restart
+    
+    Results:
+    ![Jenkins Blue Ocean](img/jenkins-blue-ocean.png)
+
+- Create a new pipeline
+
+    Results:
+    ![Jenkins Create Pipeline](img/jenkins-create-pipeline.png)
