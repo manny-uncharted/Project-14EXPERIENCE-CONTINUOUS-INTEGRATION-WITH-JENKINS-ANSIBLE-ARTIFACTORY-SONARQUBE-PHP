@@ -396,6 +396,74 @@ To really appreciate and feel the difference of Cloud Blue UI, it is recommended
 <b>Note:</b> that this pipeline is a multibranch one. This means, if there were more than one branch in GitHub, Jenkins would have scanned the repository to discover them all and we would have been able to trigger a build for each branch.
 
 
-- Now
+- Now lets create a new git branch and name it 'feature/jenkinspipelins-stages'
+    ```
+    git checkout -b feature/jenkinspipelins-stages
+    ```
 
+    - Add the code snippet below to our Jenkinsfile to create a new stage called 'Test' and echo 'Testing stage'
 
+    ```groovy
+    pipeline {
+        agent any
+
+        stages {
+                stage('Build') {
+                steps {
+                    script {
+                    sh 'echo "Building Stage"'
+                    }
+                }
+                }
+
+                stage('Test') {
+                steps {
+                    script {
+                    sh 'echo "Testing Stage"'
+                    }
+                }
+                }
+            }
+    }
+
+    ```
+
+    Results:
+    ![Jenkinsfile Test Stage](img/jenkinsfile-test-stage.png)
+
+- To make your new branch show up in Jenkins, we need to tell Jenkins to scan the repository
+    - Click on the administrator button in blue ocean
+
+    - Navigate to the Ansible project and click on "Scan repository now"
+
+    - Refresh the page and both branches should start building automatically. You can go into Blue ocean and see both branches there too.
+
+    Results:
+    ![Jenkins Scan Repo](img/jenkins-scan-repo.png)
+    ![Jenkins Scan Repo blue ocean](img/jenkins-scan-repo-blue-ocean.png)
+
+- In Blue Ocean, you can now see how the Jenkinsfile has caused a new step in the pipeline launch build for the new branch.
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-info.png)
+
+- Let's create a pull request to merge the latest code into the main branch
+
+- After the pull request is merged, go back into your terminal and switch to the main branch
+
+    ```
+    git checkout main
+    ```
+    and pull the latest changes
+
+    ```
+    git pull
+    ```
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/git-checkout-main.png)
+
+- Let's head back to jenkins and scan for changes and head to Blue ocean to see the build on the main branch
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-main.png)
