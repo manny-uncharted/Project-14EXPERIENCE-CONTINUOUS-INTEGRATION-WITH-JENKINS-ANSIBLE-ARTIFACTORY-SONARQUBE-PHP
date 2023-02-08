@@ -18,9 +18,7 @@
     - [Inventory Files](#inventory-files)
         - [CI Environment Inventory File](#ci-environment-inventory-file)
 - [Ansible Roles for CI Environment](#ansible-roles-for-ci-environment)
-    <!-- - [Jenkins](#jenkins)
-    - [SonarQube](#sonarqube)
-    - [Artifactory](#artifactory) -->
+    - [Creating our Jenkinsfile](#creating-our-jenkinsfile)
 
 
 ## Introduction
@@ -310,5 +308,94 @@ To get started on this:
 
 - Create a new pipeline
 
+    - Click on create a new pipeline
+
+    - select Github 
+
     Results:
     ![Jenkins Create Pipeline](img/jenkins-create-pipeline.png)
+
+- Login to Github and Generate an Access token and copy it
+
+    Results:
+    ![Github Access Token](img/github-access-token.png)
+
+- Paste the token and connect in the jenkins connect to github input box
+
+    Results:
+    ![Jenkins Connect to Github](img/jenkins-connect-to-github.png)
+
+- select the organization and repository
+
+    Results:
+    ![Jenkins Select Repo](img/jenkins-select-repo.png)
+
+<b>Note:</b> At this point we do not have a  Jenkinsfile in the Ansible repository, so Blue Ocean will attempt to give us some guidance to create one. But we do not need that. We will rather create one ourselves. So, click on Administration to exit the Blue Ocean console.
+
+- Here is our newly created pipeline. It takes the name of your GitHub repository.
+
+    Results:
+    ![Jenkins Pipeline](img/jenkins-pipeline.png)
+
+
+#### Creating our Jenkinsfile
+
+- Inside our Ansible project, create a new directory called deplit and start a new file Jenkinsfile inside the directory.
+
+    ```bash
+    mkdir deploy
+    cd deploy
+    touch Jenkinsfile
+    ```
+
+    Results:
+    ![Jenkinsfile](img/create-jenkinsfile.png)
+
+- Add the code snippet below to start building our Jenkinsfile gradually. This pipeline currently has just one stage called 'Build' and the only thing we are doing is using the shell script module to echo 'Building stage'
+
+    ```groovy
+    pipeline {
+        agent any
+        stages {
+            stage('Build') {
+                steps {
+                    sh 'echo "Building stage"'
+                }
+            }
+        }
+    }
+    ```
+    - commit and push the changes to Github
+
+    Results:
+    ![Jenkinsfile Build Stage](img/jenkinsfile-build-stage.png)
+
+- Now go back into the ansible pipeline in jenkins, and select configure
+    - Scroll down to 'Build Configuration' section and specify the location of the Jenkinsfile at 'deploy/Jenkinsfile'
+
+    - Save the changes
+        Results:
+        ![Jenkins Configure Pipeline](img/jenkins-configure-pipeline.png)
+
+- Back to the pipeline again, and click "Build now"
+
+    Results:
+    ![Jenkins Build Now](img/jenkins-build-now.png)
+
+<b>Note:</b> This will trigger a build and you will be able to see the effect of our basic Jenkinsfile configuration by going through the console output of the build.
+
+To really appreciate and feel the difference of Cloud Blue UI, it is recommended to try triggering the build again from Blue Ocean interface.
+
+- Open blue ocean
+    - select the project
+    - click on the play button against the branch
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build.png)
+
+<b>Note:</b> that this pipeline is a multibranch one. This means, if there were more than one branch in GitHub, Jenkins would have scanned the repository to discover them all and we would have been able to trigger a build for each branch.
+
+
+- Now
+
+
