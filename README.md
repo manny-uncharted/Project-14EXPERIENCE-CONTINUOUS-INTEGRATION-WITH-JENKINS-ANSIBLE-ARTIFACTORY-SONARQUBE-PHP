@@ -467,3 +467,17 @@ To really appreciate and feel the difference of Cloud Blue UI, it is recommended
 
     Results:
     ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-main.png)
+
+- Now let's Create a new branch, add more stages into the Jenkins file to simulate below phases. (We just need to add an echo command like we have in build and test stages)
+    
+    - Package
+    - Deploy
+    - Clean up
+
+    Results:
+    ![Jenkinsfile Stages](img/jenkinsfile-stages.png)
+
+- Verify in Blue Ocean that all the stages are working, then merge your feature branch to the main branch
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-stages.png)
