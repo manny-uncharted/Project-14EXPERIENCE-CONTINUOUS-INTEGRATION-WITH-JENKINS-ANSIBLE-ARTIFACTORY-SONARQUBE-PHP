@@ -481,3 +481,8 @@ To really appreciate and feel the difference of Cloud Blue UI, it is recommended
 
     Results:
     ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-stages.png)
+
+- Eventually, your main branch should have a successful pipeline like this in blue ocean
+
+    Results:
+    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-success.png)
