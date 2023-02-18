@@ -19,6 +19,8 @@
         - [CI Environment Inventory File](#ci-environment-inventory-file)
 - [Ansible Roles for CI Environment](#ansible-roles-for-ci-environment)
     - [Creating our Jenkinsfile](#creating-our-jenkinsfile)
+- [Running Ansible Playbook from Jenkins](#running-ansible-playbook-from-jenkins)
+    - 
 
 
 ## Introduction
@@ -486,3 +488,92 @@ To really appreciate and feel the difference of Cloud Blue UI, it is recommended
 
     Results:
     ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-success.png)
+
+## Running Ansible Playbook from Jenkins
+Now that we have a broad understanding of a typical jenkins pipeline. We need to work on getting our ansible playbook to run from jenkins.
+We would be doing the following:
+
+- Installing Ansible on Jenkins server
+- Installing Ansible plugin in Jenkins UI
+- Creating Jenkinsfile from scratch (Note: Ensure you delete the existing Jenkinsfile)
+
+### Installing Ansible on Jenkins server
+- SSH into the Jenkins server and install Ansible
+
+    ```
+    sudo apt update
+    sudo apt install software-properties-common
+    sudo apt-add-repository --yes --update ppa:ansible/ansible
+    sudo apt install ansible
+    ```
+
+    Results:
+    ![Jenkins Ansible Install](img/jenkins-ansible-install.png)
+
+### Installing Ansible plugin in Jenkins UI
+- Go to Jenkins UI.
+- Navigate to manage Jenkins
+- Navigate to Manage Plugins 
+- Search for Ansible and install Ansible plugin
+
+    Results:
+    ![Jenkins Ansible Plugin](img/jenkins-ansible-plugin.png)
+
+### Creating Jenkinsfile from scratch
+- Inside our ansible project, create a new directory called deplit and start a new file Jenkinsfile inside the directory.
+
+    ```bash
+    mkdir deploy
+    cd deploy
+    touch Jenkinsfile
+    ```
+
+    Results:
+    ![Jenkinsfile](img/create-jenkinsfile.png)
+
+### Parameterizing Jenkinsfile For Ansible Deployment
+To deploy to other environments we need to make use of parameters.
+
+- Update sit inventory with new servers
+    ```yaml
+    [tooling]
+    <SIT-Tooling-Web-Server-Private-IP-Address>
+
+    [todo]
+    <SIT-Todo-Web-Server-Private-IP-Address>
+
+    [nginx]
+    <SIT-Nginx-Private-IP-Address>
+
+    [db:vars]
+    ansible_user=ec2-user
+    ansible_python_interpreter=/usr/bin/python
+
+    [db]
+    <SIT-DB-Server-Private-IP-Address>
+    ```
+
+- Update Jenkinsfile to introduce parameterization.
+Below is just one parameter. It has a default value in case if no value is specified at execution. It also has a description so that everyone is aware of its purpose.
+    
+        ```groovy
+        pipeline {
+            agent any
+    
+                parameters {
+                    string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
+                }
+    
+                stage('Clean up') {
+                    steps {
+                        script {
+                            sh 'echo "Cleaning up Stage"'
+                        }
+                    }
+                }
+            }
+        }
+        ```
+    
+        Results:
+        ![Jenkinsfile Parameterized](img/jenkinsfile-parameterized.png)
