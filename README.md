@@ -20,8 +20,10 @@
 - [Ansible Roles for CI Environment](#ansible-roles-for-ci-environment)
     - [Creating our Jenkinsfile](#creating-our-jenkinsfile)
 - [Running Ansible Playbook from Jenkins](#running-ansible-playbook-from-jenkins)
-    - 
-
+- [CI/CD Pipeline for Todo Application](#cicd-pipeline-for-todo-application)
+    - [Prepare Jenkins](#prepare-jenkins)
+    - [Integrate Artifactory with Jenkins](#integrate-artifactory-with-jenkins)
+    
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -556,24 +558,30 @@ To deploy to other environments we need to make use of parameters.
 - Update Jenkinsfile to introduce parameterization.
 Below is just one parameter. It has a default value in case if no value is specified at execution. It also has a description so that everyone is aware of its purpose.
     
-        ```groovy
-        pipeline {
-            agent any
-    
-                parameters {
-                    string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
-                }
-    
-                stage('Clean up') {
-                    steps {
-                        script {
-                            sh 'echo "Cleaning up Stage"'
-                        }
+    ```groovy
+    pipeline {
+        agent any
+
+            parameters {
+                string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
+            }
+
+            stage('Clean up') {
+                steps {
+                    script {
+                        sh 'echo "Cleaning up Stage"'
                     }
                 }
             }
         }
-        ```
+    }
+    ```
     
-        Results:
-        ![Jenkinsfile Parameterized](img/jenkinsfile-parameterized.png)
+    Results:
+    ![Jenkinsfile Parameterized](img/jenkinsfile-parameterized.png)
+
+- In the Ansible execution section, remove the hardcoded inventory/dev and replace with '${inventory}'
+
+
+Results:
+![Jenkinsfile Parameterized](img/jenkinsfile-parameterized-ansible.png)
