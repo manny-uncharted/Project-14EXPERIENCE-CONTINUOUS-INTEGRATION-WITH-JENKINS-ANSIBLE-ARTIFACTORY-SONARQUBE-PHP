@@ -392,3 +392,65 @@ sudo systemctl status jenkins
 
 Result:
 ![Jenkins Status](img/jenkins-status.png)
+
+- To access Jenkins, open a web browser and enter the public IP address of your EC2 instance, followed by :8080.
+Note: If you are using a security group, make sure you have port 8080 open.
+
+- To get the initial password, run the following command:
+```
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+paste the initial password in the browser and click continue
+
+Results:
+![Jenkins Initial Password](img/jenkins-initial-password.png)
+
+
+- Install the suggested plugins and create your first admin user
+
+- Once your are done with the initial setup, you will be redirected to the Jenkins dashboard. Click on Manage Jenkins and then click on Manage Plugins. Click on the available tab and search for blue ocean. Install the blue ocean plugin and install without restart.
+
+Result:
+![Jenkins Blue Ocean Plugin](img/jenkins-blue-ocean-plugin.png)
+
+- Now go to dashboard and click on "Open Blue Ocean" and then click on "Create a new pipeline"
+
+Result:
+![Jenkins Blue Ocean](img/jenkins-blue-ocean.png)
+
+- Select Github and click on "Github" and enter your github access token and click on "Connect" and then select the repository you want to use for your project and click on "Create Pipeline"
+
+Result:
+![Jenkins Blue Ocean Github](img/jenkins-blue-ocean-github.png)
+
+- Inside the code repository in your EC2 instance, create a folder and name it 'deploy' and inside deploy create a jenkinsfile and paste the code below
+```
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    sh 'echo "Building stage"'
+                }
+            }
+        }
+    }
+}
+```
+
+Result:
+![Jenkinsfile](img/jenkinsfile.png)
+
+- Now push the code to your github repository and go back to your jenkins dashboard and click on "ansible config mgt" and then click on configure.
+
+Here we are trying to tell jenkins the path to our build configuration file which is in the 'deploy/' folder. So we will add the path to the jenkinsfile in the "Build Configuaration" section and click on "Save"
+
+Result:
+![Jenkins Build Configuration](img/jenkins-build-configuration.png)
+
+- Once you have saved the configuration, the build would automatically start and you can open blue ocean to see the build process.
+
+Result:
+![Jenkins Build](img/jenkins-build.png)
