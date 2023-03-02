@@ -23,7 +23,7 @@
 - [CI/CD Pipeline for Todo Application](#cicd-pipeline-for-todo-application)
     - [Prepare Jenkins](#prepare-jenkins)
     - [Integrate Artifactory with Jenkins](#integrate-artifactory-with-jenkins)
-    
+
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -198,8 +198,6 @@ Our Ansible inventory folder should look like this:
 └── uat
 ```
 
-Results:
-![Ansible Inventory](img/ansible-inventory-structure.png)
 
 #### Inventory files
 Our ansible inventory files for each environment should look like this:
@@ -220,9 +218,6 @@ Create an inventory file for the CI environment. This will be used to access Jen
 <Artifact_repository-Private-IP-Address>
 ```
 
-Results:
-![CI Inventory](img/ci-inventory.png)
-
 ##### Development Environment Inventory File
 Create an inventory file for the Development environment. This will be used to access Nginx, TODO-webapp and Tooling. The inventory file should look like this:
 ```yaml
@@ -242,9 +237,6 @@ ansible_python_interpreter=/usr/bin/python
 [db]
 <DB-Server-Private-IP-Address>
 ```
-
-Results:
-![Dev Inventory](img/dev-inventory.png)
 
 ##### Pentest Environment Inventory File
 Create an inventory file for the Pentest environment. This will be used to access Nginx, TODO-webapp and Tooling. The inventory file should look like this:
@@ -286,302 +278,117 @@ SonarQube is an open-source platform developed by SonarSource for continuous ins
 
 Artifactory is a product by JFrog that serves as a binary repository manager. The binary repository is a natural extension to the source code repository, in that the outcome of your build process is stored. It can be used for certain other automation, but we will it strictly to manage our build artifacts.
 
+
+#### Dependences to be installed
+====================================
+- yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+- yum install -y dnf-utils http://rpms.remirepo.net/enterprise/remi-release-8.rpm
+- yum install python3 python3-pip wget unzip git -y
+- python3 -m pip install --upgrade setuptools
+- python3 -m pip install --upgrade pip
+- python3 -m pip install PyMySQL
+- python3 -m pip install mysql-connector-python
+- python3 -m pip install psycopg2==2.7.5 --ignore-installed
+
+#### Installing  JAVA
+====================================
+- sudo yum install java-11-openjdk-devel -y
+
+##### open the bash profile 
+vi .bash_profile 
+
+##### paste the below in the bash profile
+export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
+export PATH=$PATH:$JAVA_HOME/bin
+export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
+
+##### reload the bash profile
+source ~/.bash_profile
+
+
+##### Install  php
+=====================================
+- yum module reset php -y
+- yum module enable php:remi-7.4 -y
+- yum install -y php  php-common php-mbstring php-opcache php-intl php-xml php-gd php-curl php-mysqlnd    php-fpm php-json
+- systemctl start php-fpm
+- systemctl enable php-fpm
+
+
+#### Ansible dependencies to install
+=====================================
+* For Mysql Database
+- ansible-galaxy collection install community.mysql
+
+* For Postgresql Database
+- ansible-galaxy collection install community.postgresql
+
+#### Install composer
+=====================================
+- curl -sS https://getcomposer.org/installer | php 
+- sudo mv composer.phar /usr/bin/composer
+
+##### Verify Composer is installed or not
+- composer --version
+
+
+#### Install phpunit, phploc
+=====================================
+- sudo dnf --enablerepo=remi install php-phpunit-phploc
+- wget -O phpunit https://phar.phpunit.de/phpunit-7.phar
+- chmod +x phpunit
+- sudo yum  install php-xdebug
+
+#### for database connection
+====================================
+DB_CONNECTION=mysql
+DB_PORT=3306
+
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo yum install mysql -y
+
+Learn how to install Jenkins [here](https://www.jenkins.io/doc/book/installing/)
+
+Learn how to installk artifactory [here](https://jfrog.com/open-source/)
+
+
 #### Configuring Ansible for Jenkins Deployment
-Prior to this all the previous projects have involved launching ansible commands manually from a CLI. Now with jenkins, we will start running Ansible from Jenkins UI.
-
-To get started on this:
-
-- Go to our Jenkins URL
-    ```
-    https://<public-ip-address>:8080
-    ```
-
-    - Login with the credentials we created earlier
-
-    Results:
-    ![Jenkins Login](img/jenkins-login.png)
-
-- Install & Open Blue Ocean Jenkins Plugin
-    - Click on Manage Jenkins
-    - Click on Manage Plugins
-    - Search for Blue Ocean
-    - Click on Install without restart
-    
-    Results:
-    ![Jenkins Blue Ocean](img/jenkins-blue-ocean.png)
-
-- Create a new pipeline
-
-    - Click on create a new pipeline
-
-    - select Github 
-
-    Results:
-    ![Jenkins Create Pipeline](img/jenkins-create-pipeline.png)
-
-- Login to Github and Generate an Access token and copy it
-
-    Results:
-    ![Github Access Token](img/github-access-token.png)
-
-- Paste the token and connect in the jenkins connect to github input box
-
-    Results:
-    ![Jenkins Connect to Github](img/jenkins-connect-to-github.png)
-
-- select the organization and repository
-
-    Results:
-    ![Jenkins Select Repo](img/jenkins-select-repo.png)
-
-<b>Note:</b> At this point we do not have a  Jenkinsfile in the Ansible repository, so Blue Ocean will attempt to give us some guidance to create one. But we do not need that. We will rather create one ourselves. So, click on Administration to exit the Blue Ocean console.
-
-- Here is our newly created pipeline. It takes the name of your GitHub repository.
-
-    Results:
-    ![Jenkins Pipeline](img/jenkins-pipeline.png)
-
-
-#### Creating our Jenkinsfile
-
-- Inside our Ansible project, create a new directory called deplit and start a new file Jenkinsfile inside the directory.
-
-    ```bash
-    mkdir deploy
-    cd deploy
-    touch Jenkinsfile
-    ```
-
-    Results:
-    ![Jenkinsfile](img/create-jenkinsfile.png)
-
-- Add the code snippet below to start building our Jenkinsfile gradually. This pipeline currently has just one stage called 'Build' and the only thing we are doing is using the shell script module to echo 'Building stage'
-
-    ```groovy
-    pipeline {
-        agent any
-        stages {
-            stage('Build') {
-                steps {
-                    sh 'echo "Building stage"'
-                }
-            }
-        }
-    }
-    ```
-    - commit and push the changes to Github
-
-    Results:
-    ![Jenkinsfile Build Stage](img/jenkinsfile-build-stage.png)
-
-- Now go back into the ansible pipeline in jenkins, and select configure
-    - Scroll down to 'Build Configuration' section and specify the location of the Jenkinsfile at 'deploy/Jenkinsfile'
-
-    - Save the changes
-        Results:
-        ![Jenkins Configure Pipeline](img/jenkins-configure-pipeline.png)
-
-- Back to the pipeline again, and click "Build now"
-
-    Results:
-    ![Jenkins Build Now](img/jenkins-build-now.png)
-
-<b>Note:</b> This will trigger a build and you will be able to see the effect of our basic Jenkinsfile configuration by going through the console output of the build.
-
-To really appreciate and feel the difference of Cloud Blue UI, it is recommended to try triggering the build again from Blue Ocean interface.
-
-- Open blue ocean
-    - select the project
-    - click on the play button against the branch
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build.png)
-
-<b>Note:</b> that this pipeline is a multibranch one. This means, if there were more than one branch in GitHub, Jenkins would have scanned the repository to discover them all and we would have been able to trigger a build for each branch.
-
-
-- Now lets create a new git branch and name it 'feature/jenkinspipelins-stages'
-    ```
-    git checkout -b feature/jenkinspipelins-stages
-    ```
-
-    - Add the code snippet below to our Jenkinsfile to create a new stage called 'Test' and echo 'Testing stage'
-
-    ```groovy
-    pipeline {
-        agent any
-
-        stages {
-                stage('Build') {
-                steps {
-                    script {
-                    sh 'echo "Building Stage"'
-                    }
-                }
-                }
-
-                stage('Test') {
-                steps {
-                    script {
-                    sh 'echo "Testing Stage"'
-                    }
-                }
-                }
-            }
-    }
-
-    ```
-
-    Results:
-    ![Jenkinsfile Test Stage](img/jenkinsfile-test-stage.png)
-
-- To make your new branch show up in Jenkins, we need to tell Jenkins to scan the repository
-    - Click on the administrator button in blue ocean
-
-    - Navigate to the Ansible project and click on "Scan repository now"
-
-    - Refresh the page and both branches should start building automatically. You can go into Blue ocean and see both branches there too.
-
-    Results:
-    ![Jenkins Scan Repo](img/jenkins-scan-repo.png)
-    ![Jenkins Scan Repo blue ocean](img/jenkins-scan-repo-blue-ocean.png)
-
-- In Blue Ocean, you can now see how the Jenkinsfile has caused a new step in the pipeline launch build for the new branch.
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-info.png)
-
-- Let's create a pull request to merge the latest code into the main branch
-
-- After the pull request is merged, go back into your terminal and switch to the main branch
-
-    ```
-    git checkout main
-    ```
-    and pull the latest changes
-
-    ```
-    git pull
-    ```
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/git-checkout-main.png)
-
-- Let's head back to jenkins and scan for changes and head to Blue ocean to see the build on the main branch
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-main.png)
-
-- Now let's Create a new branch, add more stages into the Jenkins file to simulate below phases. (We just need to add an echo command like we have in build and test stages)
-    
-    - Package
-    - Deploy
-    - Clean up
-
-    Results:
-    ![Jenkinsfile Stages](img/jenkinsfile-stages.png)
-
-- Verify in Blue Ocean that all the stages are working, then merge your feature branch to the main branch
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-stages.png)
-
-- Eventually, your main branch should have a successful pipeline like this in blue ocean
-
-    Results:
-    ![Jenkins Blue Ocean Build](img/jenkins-blue-ocean-build-success.png)
-
-## Running Ansible Playbook from Jenkins
-Now that we have a broad understanding of a typical jenkins pipeline. We need to work on getting our ansible playbook to run from jenkins.
-We would be doing the following:
-
-- Installing Ansible on Jenkins server
-- Installing Ansible plugin in Jenkins UI
-- Creating Jenkinsfile from scratch (Note: Ensure you delete the existing Jenkinsfile)
-
-### Installing Ansible on Jenkins server
-- SSH into the Jenkins server and install Ansible
-
-    ```
-    sudo apt update
-    sudo apt install software-properties-common
-    sudo apt-add-repository --yes --update ppa:ansible/ansible
-    sudo apt install ansible
-    ```
-
-    Results:
-    ![Jenkins Ansible Install](img/jenkins-ansible-install.png)
-
-### Installing Ansible plugin in Jenkins UI
-- Go to Jenkins UI.
-- Navigate to manage Jenkins
-- Navigate to Manage Plugins 
-- Search for Ansible and install Ansible plugin
-
-    Results:
-    ![Jenkins Ansible Plugin](img/jenkins-ansible-plugin.png)
-
-### Creating Jenkinsfile from scratch
-- Inside our ansible project, create a new directory called deplit and start a new file Jenkinsfile inside the directory.
-
-    ```bash
-    mkdir deploy
-    cd deploy
-    touch Jenkinsfile
-    ```
-
-    Results:
-    ![Jenkinsfile](img/create-jenkinsfile.png)
-
-### Parameterizing Jenkinsfile For Ansible Deployment
-To deploy to other environments we need to make use of parameters.
-
-- Update sit inventory with new servers
-    ```yaml
-    [tooling]
-    <SIT-Tooling-Web-Server-Private-IP-Address>
-
-    [todo]
-    <SIT-Todo-Web-Server-Private-IP-Address>
-
-    [nginx]
-    <SIT-Nginx-Private-IP-Address>
-
-    [db:vars]
-    ansible_user=ec2-user
-    ansible_python_interpreter=/usr/bin/python
-
-    [db]
-    <SIT-DB-Server-Private-IP-Address>
-    ```
-
-- Update Jenkinsfile to introduce parameterization.
-Below is just one parameter. It has a default value in case if no value is specified at execution. It also has a description so that everyone is aware of its purpose.
-    
-    ```groovy
-    pipeline {
-        agent any
-
-            parameters {
-                string(name: 'inventory', defaultValue: 'dev', description: 'This is the inventory file for the environment to deploy configuration')
-            }
-
-            stage('Clean up') {
-                steps {
-                    script {
-                        sh 'echo "Cleaning up Stage"'
-                    }
-                }
-            }
-        }
-    }
-    ```
-    
-    Results:
-    ![Jenkinsfile Parameterized](img/jenkinsfile-parameterized.png)
-
-- In the Ansible execution section, remove the hardcoded inventory/dev and replace with '${inventory}'
-
-
-Results:
-![Jenkinsfile Parameterized](img/jenkinsfile-parameterized-ansible.png)
+Here you would see a step by step process on how to configure Jenkins and ansible for deployment.
+
+##### Requirements:
+- EC2 instance with RedHat Linux distro
+- Jenkins installed
+- Ansible installed
+- Code Repository (<a href="https://github.com/manny-uncharted/ansible-config-mgt.git">Github</a>)
+
+
+- Spin up your EC2 instance with RedHat Linux distro and ensure you install git
+```
+sudo yum install git
+```
+and then clone the repository from Github
+```
+git clone <repo link>
+```
+
+- Install Jenkins
+```
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo yum upgrade
+# Add required dependencies for the jenkins package
+sudo yum install java-11-openjdk
+sudo yum install jenkins
+sudo systemctl daemon-reload
+```
+
+- To start Jenkins, run the following command:
+```
+sudo systemctl start jenkins
+sudo systemctl enable jenkins
+sudo systemctl status jenkins
+```
+
+Result:
+![Jenkins Status](img/jenkins-status.png)
