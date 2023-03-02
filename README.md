@@ -454,3 +454,59 @@ Result:
 
 Result:
 ![Jenkins Build](img/jenkins-build.png)
+
+Note: You notice that this pipeline is a multibranch one. This means, if there were more than one branch in Github. Jenkins would scan all branches and trigger a build for each branch.
+
+- To see the multibranch pipeline in effect, 
+    - create a new branch and name it 'feature/jenkinspipeline-stages'
+
+    ```
+    git checkout -b feature/jenkinspipeline-stages
+    ```
+    - At the moment we only have the build stage in our jenkinsfile. So we will add the other stages to our jenkinsfile and push the code to github.
+
+    ```groovy
+     stage('Test') {
+      steps {
+        script {
+          sh 'echo "Testing Stage"'
+        }
+      }
+    }
+    ```
+
+Result:
+![Jenkinsfile Test Stage](img/jenkinsfile-test-stage.png)
+
+- To make your new branch show up in Jenkins, we need to tell Jenkins to scan the repository. Click on the "Administration button" and navigate to the "Ansible Config Mgt" project and click on "Scan repository now". Refresh the page and both branches will start building automatically. You can go into Blue Ocean to see both branches there too.
+
+Result:
+![Jenkins Scan Repository](img/jenkins-scan-repository.png)
+
+- In Blue Ocean, you can now see how the Jenkinsfile has caused a new step in the pipeline launch build for the new branch.
+
+Result:
+![Jenkins Blue Ocean Branches](img/jenkins-blue-ocean-branches.png)
+
+- Let's create a pull request to merge the latest code into the main branch. After merging the pull request, go back into the main branch and pull the latest change.
+
+Result:
+![Jenkins Pull Request](img/jenkins-pull-request.png)
+
+- Create a new branch, add more stages into the Jenkins file to simulate below phases. (Just add an echo command like we have in build and test stages)
+   1. Package 
+   2. Deploy 
+   3. Clean up
+
+Result:
+![Jenkinsfile Stages](img/jenkinsfile-stages.png)
+
+- Verify in Blue Ocean that all the stages are working, then merge your feature branch to the main branch
+
+Result:
+![Jenkins Blue Ocean Stages](img/jenkins-blue-ocean-stages.png)
+
+- Eventually, your main branch should have a successful pipeline like this in blue ocean
+
+Result:
+![Jenkins Blue Ocean Successful Pipeline](img/jenkins-blue-ocean-successful-pipeline.png)
