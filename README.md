@@ -498,6 +498,60 @@ Result:
    2. Deploy 
    3. Clean up
 
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Initial Cleanup') {
+            steps {
+                dir("${WORKSPACE}") {
+                    deleteDir()
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    sh 'echo "Building stage"'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    sh 'echo "Testing Stage" '
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                script {
+                    sh 'echo "Packaging Stage"'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    sh 'echo "Deployment Stage"'
+                }
+            }
+        }
+
+        stage('Final Clean Up') {
+            steps {
+                cleanWs()
+                
+            }
+        }
+    }
+}
+```
 Result:
 ![Jenkinsfile Stages](img/jenkinsfile-stages.png)
 
@@ -510,3 +564,41 @@ Result:
 
 Result:
 ![Jenkins Blue Ocean Successful Pipeline](img/jenkins-blue-ocean-successful-pipeline.png)
+
+
+### Running Ansible Playbook from Jenkins
+
+- Install Ansible in your EC2 instance
+```
+sudo yum install ansible
+```
+
+- Install the Ansible plugin in Jenkins
+    - Go to Jenkins dashboard and click on "Manage Jenkins" and then click on "Manage Plugins"
+    - Click on the available tab and search for ansible. Install the ansible plugin and install without restart.
+
+Result:
+![Jenkins Ansible Plugin](img/jenkins-ansible-plugin.png)
+
+- Creating Jenkinsfile from scratch. (Delete all you currently have in there and start all over to get Ansible to run successfully)
+
+Note: Jenkins needs to export the ANSIBLE_CONFIG environment variable. You can put the .ansible.cfg file alongside Jenkinsfile in the deploy directory. This way, anyone can easily identify that everything in there relates to deployment. Then, using the Pipeline Syntax tool in Ansible, generate the syntax to create environment variables to set.
+
+
+### Parameterizing Jenkinsfile for Ansible Deployment.
+
+To deploy to other environments, we will need to use parameters.
+But for the purpose of this we would just run our playbook against the development environment. 
+
+- Create two new instances
+    - Nginx - Redhat 8
+    - DB - ubuntu 
+
+result:
+![Jenkins Nginx DB](img/jenkins-nginx-db.png)
+
+- Delete the details in the existing jenkinsfile and update it to run against the dev environment
+
+```groovy
+
+```
