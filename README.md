@@ -700,3 +700,45 @@ sudo apt install -y zip libapache2-mod-php phploc php-{xml,bcmath,bz2,intl,gd,mb
 ```
 result:
 ![Jenkins PHP](img/jenkins-php.png)
+
+- Install Jenkins Plugins
+    - Plot plugin
+    - Artifactory plugin
+
+    We will use plot plugin to display tests reports, and code coverage information.
+
+    The Artifactory plugin will be used to easily upload code artifacts into an Artifactory server.
+
+result:
+![Jenkins Plugins](img/jenkins-plugins.png)
+
+- Install composer
+```bash
+curl -sS https://getcomposer.org/installer | php
+sudo mv composer.phar /usr/bin/composer
+```
+result:
+![Jenkins Composer](img/jenkins-composer.png)
+
+- Launch a new Instance for Artifactory
+    - Redhat 9
+    - t2.medium
+    - 4GB RAM
+    - 10GB minimum Storage
+
+- We would be using ansible roles to install artifactory on the instance we just created. The roles are located in the ansible-config-mgt repository. So we need to update the 'ci' inventory with the artifactory private address and then commit and push the changes to the main branch.
+    - Then we run the ansible playbook to run against the 'ci' inventory and install artifactory on the instance we just created.
+
+results:
+![Jenkins Artifactory](img/jenkins-artifactory.png)
+
+
+- In Jenkins UI configure Artifactory
+    - Go to "Manage Jenkins" and then click on "Configure System"
+    - Scroll down to "Artifactory" and click on "Add Artifactory Server" and add the following details
+        - Name: artifactory
+        - URL: http://artifactory:8081/artifactory
+        - Credentials: Add credentials and add your artifactory username and password
+        - Default Deployment Repository: local-repo
+        - Default Snapshot Repository: local-repo
+        - Default Release Repository: local-repo
