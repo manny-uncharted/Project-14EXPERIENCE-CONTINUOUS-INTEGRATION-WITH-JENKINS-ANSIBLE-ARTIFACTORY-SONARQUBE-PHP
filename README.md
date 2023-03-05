@@ -597,8 +597,106 @@ But for the purpose of this we would just run our playbook against the developme
 result:
 ![Jenkins Nginx DB](img/jenkins-nginx-db.png)
 
-- Delete the details in the existing jenkinsfile and update it to run against the dev environment
+- Delete the details in the existing jenkinsfile and update it to run against the dev environment also create a file called ansible.cfg as this would contain our ansible configuration settings
+
+for the ansible.cfg file, add the following code
+```
+[defaults]
+timeout = 160
+callback_whitelist = profile_tasks
+log_path=~/ansible.log
+host_key_checking = False
+gathering = smart
+ansible_python_interpreter=/usr/bin/python3
+allow_world_readable_tmpfiles=true
+
+
+[ssh_connection]
+ssh_args = -o ControlMaster=auto -o ControlPersist=30m -o ControlPath=/tmp/ansible-ssh-%h-%p-%r -o ServerAliveInterval=60 -o ServerAliveCountMax=60 -o ForwardAgent=yes
+```
 
 ```groovy
+pipeline {
+    agent any
 
+    environment {
+        ANSIBLE_CONFIG="${WORKSPACE}/deploy/ansible.cfg"
+    }
+
+    parameters {
+      string(name: 'inventory', defaultValue: 'dev',  description: 'This is the inventory file for the environment to deploy configuration')
+    }
+
+    stages{
+        stage("Initial cleanup") {
+            steps {
+                dir("${WORKSPACE}") {
+                deleteDir()
+                }
+            }
+        }
+
+        stage('Checkout SCM') {
+            steps{
+                git branch: 'main', url: 'https://github.com/manny-uncharted/ansible-config-mgt.git'
+            }
+        }
+
+        stage('Prepare Ansible For Execution') {
+            steps {
+                sh 'echo ${WORKSPACE}' 
+                sh 'sed -i "3 a roles_path=${WORKSPACE}/roles" ${WORKSPACE}/deploy/ansible.cfg'  
+            }
+        }
+
+        stage('Run Ansible playbook') {
+            steps {
+                ansiblePlaybook colorized: true, credentialsId: 'private-key', disableHostKeyChecking: true, installation: 'ansible', inventory: 'inventory/dev.yml', playbook: 'playbooks/site.yml'
+            }
+        }
+
+        stage('Clean Workspace after build'){
+            steps{
+                cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenUnstable: true, deleteDirs: true)
+            }
+        }
+    }
+}
 ```
+
+Note: To generate the ansible playbook syntax, click on "Pipeline Syntax" and then click on "Snippet Generator" and then select "Ansible Playbook" and then click on "Generate Pipeline Script" and then copy the code and paste it into your Jenkinsfile.
+
+result:
+![Jenkins Ansible Playbook](img/jenkins-ansible-playbook.png)
+
+- Navigate to "Manage Jenkins" and click on "Manage Credentials" and click on global and click on "Add Credentials" and add your private key. (This is the private key you used to create your instances)
+
+result:
+![Jenkins Manage Credentials](img/jenkins-manage-credentials.png)
+
+- Navigate back to the "Dashboard" and click on "Manage Jenkins" and then on "Global Tool Configuration" and then scroll down to "Ansible" and click on "Add Ansible" and add the path to the ansible executable. (This is the path to the ansible executable on your EC2 instance) and then click on "Apply" and then "Save"
+
+result:
+![Jenkins Global Tool Configuration](img/jenkins-global-tool-configuration.png)
+
+- Now you can commit your changes and push to the main branch and then run the pipeline.
+
+result:
+![Jenkins Ansible Successful Pipeline](img/jenkins-ansible-successful-pipeline.png)
+
+
+### CI/CD Pipeline for Todo Application
+Here we will introduce another PHP application to add to the list of software products we are managing in our infrastructure. The good thing with this particular application is that it has unit tests, and it is an ideal application to show an end-to-end CI/CD pipeline for a particular application.
+
+The goal here is to deploy the application onto servers directly from Artifactory rather than from git. If you have not updated Ansible with an Artifactory role, simply use this guide to create an Ansible role for Artifactory (ignore the Nginx part).
+
+
+#### Prepare Jenkins
+- Fork the repository from ![here](https://github.com/manny-uncharted/php-todo.git) to your github account.
+
+- On your Jenkins server, install PHP, its dependencies and Composer tool. You can use the following commands to install PHP and its dependencies
+```bash
+sudo apt install -y zip libapache2-mod-php phploc php-{xml,bcmath,bz2,intl,gd,mbstring,mysql,zip}
+```
+result:
+![Jenkins PHP](img/jenkins-php.png)
