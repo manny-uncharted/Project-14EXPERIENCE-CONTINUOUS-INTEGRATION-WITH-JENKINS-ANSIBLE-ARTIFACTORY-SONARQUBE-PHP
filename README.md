@@ -732,13 +732,71 @@ result:
 results:
 ![Jenkins Artifactory](img/jenkins-artifactory.png)
 
+- Ensure you have port '8082' open in the security group of the artifactory instance.
 
-- In Jenkins UI configure Artifactory
+- Now open jfrog artifactory on your browser and login with the default credentials (admin:password)
+
+- Create a new local repository called 'PBL' and select the type as 'Generic' and then click on 'Create'
+
+result:
+![Jenkins Artifactory](img/jenkins-artifactory-repo.png)
+
+- To configure our artifactory server in Jenkins, we need to do the following:
     - Go to "Manage Jenkins" and then click on "Configure System"
     - Scroll down to "Artifactory" and click on "Add Artifactory Server" and add the following details
         - Name: artifactory
         - URL: http://artifactory:8081/artifactory
         - Credentials: Add credentials and add your artifactory username and password
-        - Default Deployment Repository: local-repo
-        - Default Snapshot Repository: local-repo
-        - Default Release Repository: local-repo
+        - Ensure you test connection and it is successful
+        - Click on "Apply" and then "Save"
+
+result:
+![Jenkins Artifactory](img/jenkins-artifactory-configure.png)
+
+- Now we need to create a jenkinsfile inside the php-todo repository. The jenkinsfile will contain the following code:
+```groovy
+pipeline {
+    agent any
+
+    stages {
+
+    stage("Initial cleanup") {
+        steps {
+        dir("${WORKSPACE}") {
+            deleteDir()
+        }
+        }
+    }
+
+    stage('Checkout SCM') {
+        steps {
+            git branch: 'main', url: 'https://github.com/manny-uncharted/php-todo.git'
+        }
+    }
+
+    stage('Prepare Dependencies') {
+      steps {
+             sh 'mv .env.sample .env'
+             sh 'composer install'
+             sh 'php artisan migrate'
+             sh 'php artisan db:seed'
+             sh 'php artisan key:generate'
+      }
+    }
+  }
+}
+```
+result:
+![PHP-TODO Jenkinsfile](img/php-todo-jenkinsfile.png)
+
+- Before we execute the pipeline, we need to create a database and a user
+```
+Create database homestead;
+CREATE USER 'homestead'@'%' IDENTIFIED BY 'sePret^i';
+GRANT ALL PRIVILEGES ON * . * TO 'homestead'@'%';
+```
+But instead of logging into the database server, we can use the mysql ansible role to create the database and user. So we need to update the 'ci' inventory with the database server private address and then commit and push the changes to the main branch.
+```yaml
+
+```
+    - Then we run the ansible playbook to run against the 'dev.yml' inventory and create the database and user.
