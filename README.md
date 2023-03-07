@@ -797,6 +797,27 @@ GRANT ALL PRIVILEGES ON * . * TO 'homestead'@'%';
 ```
 But instead of logging into the database server, we can use the mysql ansible role to create the database and user. So we need to update the 'ci' inventory with the database server private address and then commit and push the changes to the main branch.
 ```yaml
+mysql_databases:
+  - name: homestead
+    collation: utf8_general_ci
+    encoding: utf8
+    replicate: 1
 
+mysql_users:
+  - name: homestead
+    host: <private-ip-address-of-your-jenkins-server>
+    password: sePret^i
+    priv: '*.*:ALL,GRANT'
 ```
     - Then we run the ansible playbook to run against the 'dev.yml' inventory and create the database and user.
+
+result:
+![Jenkins MySQL](img/jenkins-mysql.png)
+
+- Now let's commit the Jenkinsfile created in our php-todo repository and push to the main branch. Then we can create a new pipeline and select the php-todo repository and then configure it to find the jenkinsfile and build the pipeline.
+
+result:
+![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline.png)
+
+Note: When running the initial build process you might run into an error like this:
+![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-error.png)
