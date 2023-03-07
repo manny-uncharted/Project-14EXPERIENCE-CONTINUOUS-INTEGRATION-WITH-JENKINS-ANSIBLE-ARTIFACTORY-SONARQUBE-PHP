@@ -821,3 +821,44 @@ result:
 
 Note: When running the initial build process you might run into an error like this:
 ![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-error.png)
+
+To fix this:
+- Install mysql-client on your jenkins server
+```bash
+sudo apt install mysql-client
+```
+result:
+![Jenkins MySQL Client](img/jenkins-mysql-client.png)
+
+- ssh into the mysql server and edit the configuration file
+```bash
+sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+edit the bind address to
+```nano
+bind-address = 0.0.0.0
+```
+and then restart the mysql service
+```bash
+sudo systemctl restart mysql
+sudo systemctl status mysql
+```
+result:
+![Jenkins MySQL Client](img/jenkins-mysql-client-restart.png)
+
+- In the php-todo repository, edit the .env file and change the following details
+```nano
+DB_HOST=172.31.31.234
+DB_CONNECTION=mysql
+DB_PORT=3306
+```
+and then commit and push the changes to the main branch.
+
+- Update the Jenkinsfile to include Unit tests step
+```groovy
+stage('Execute Unit Tests') {
+    steps {
+        sh './vendor/bin/phpunit'
+    }
+}
+```
