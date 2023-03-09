@@ -957,13 +957,22 @@ result:
 ```groovy
 stage ('Deploy to Dev Environment') {
     steps {
-        build job: 'ansible-project/main', parameters: [[$class: 'StringParameterValue', name: 'env', value: 'dev']], propagate: false, wait: true
+        build job: 'ansible-config-mgt/main', parameters: [[$class: 'StringParameterValue', name: 'env', value: 'dev']], propagate: false, wait: true
     }
 }
 ```
 Then push the code to the repository and trigger the build. You should now see a Plot menu item on the left menu. Click on it to see the charts. (The analytics may not mean much to you as it is meant to be read by developers. So, you need not worry much about it – this is just to give you an idea of the real-world implementation).
 result:
 ![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-deploy-dev.png)
+![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-deploy-dev-1.png)
+
+- To ensure that our deployment shows up on our server.
+    - Spin up a new EC2 instance
+    - Then configure our playbook to deploy the application to the new EC2 instance
+    - Then run the playbook to deploy the application to the new EC2 instance
+    - Then access the application on the new EC2 instance
+result:
+![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-deploy-dev-2.png)
 
 Note: The build job used in this step tells Jenkins to start another job. In this case it is the ansible-project job, and we are targeting the main branch. Hence, we have ansible-project/main. Since the Ansible project requires parameters to be passed in, we have included this by specifying the parameters section. The name of the parameter is env and its value is dev. Meaning, deploy to the Development environment.
 
