@@ -24,6 +24,7 @@
     - [Prepare Jenkins](#prepare-jenkins)
     - [Integrate Artifactory with Jenkins](#integrate-artifactory-with-jenkins)
 - [Code Quality Analysis](#code-quality-analysis)
+- [SonarQube Installation](#sonarqube-installation)
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -979,3 +980,29 @@ Note: The build job used in this step tells Jenkins to start another job. In thi
 But how are we certain that the code being deployed has the quality that meets corporate and customer requirements? Even though we have implemented Unit Tests and Code Coverage Analysis with phpunit and phploc, we still need to implement Quality Gate to ensure that ONLY code with the required code coverage, and other quality standards make it through to the environments.
 
 To achieve this, we need to configure SonarQube – An open-source platform developed by SonarSource for continuous inspection of code quality to perform automatic reviews with static analysis of code to detect bugs, code smells, and security vulnerabilities.
+
+
+### SonarQube Installation
+Before we start getting hands on with SonarQube configuration, it is incredibly important to understand a few concepts:
+
+Software Quality – The degree to which a software component, system or process meets specified requirements based on user needs and expectations.
+Software Quality Gates – Quality gates are basically acceptance criteria which are usually presented as a set of predefined quality criteria that a software development project must meet in order to proceed from one stage of its lifecycle to the next one.
+SonarQube is a tool that can be used to create quality gates for software projects, and the ultimate goal is to be able to ship only quality software code.
+
+Despite that DevOps CI/CD pipeline helps with fast software delivery, it is of the same importance to ensure the quality of such delivery. Hence, we will need SonarQube to set up Quality gates. In this project we will use predefined Quality Gates (also known as The Sonar Way). Software testers and developers would normally work with project leads and architects to create custom quality gates.
+
+- Launch an ubuntu EC2 instance.
+- Install postgresql on the jenkins instance
+```bash
+ansible-galaxy collection install community.postgresql
+```
+result:
+![Jenkins PHP-TODO Pipeline](img/postgres.png)
+
+- The ansible role required to install SonarQube is available in the code repository. To install SonarQube, we will need to run the jenkins pipeline against the ci environment.
+result:
+![Jenkins PHP-TODO Pipeline](img/jenkins-php-todo-pipeline-sonarqube.png)
+
+- Now that sonarqube has been installed properly, ensure you have port 9000 open on the security group. Then navigate to the public IP address of the EC2 instance on port 9000. You should see the SonarQube login page.
+result:
+![Sonarqube](img/sonarqube.png)
