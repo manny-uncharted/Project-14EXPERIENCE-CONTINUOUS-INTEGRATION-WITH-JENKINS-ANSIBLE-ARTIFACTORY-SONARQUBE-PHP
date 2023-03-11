@@ -26,6 +26,7 @@
 - [Code Quality Analysis](#code-quality-analysis)
 - [SonarQube Installation](#sonarqube-installation)
 -[CONFIGURE SONARQUBE AND JENKINS FOR QUALITY GATE](#configure-sonarqube-and-jenkins-for-quality-gate)
+- [Conditionally deploy to higher environments](#conditionally-deploy-to-higher-environments)
 
 ## Introduction
 In this project, we would understand and get hands-on experience with the entire concept of CI/CD from an applications perspective. This would help us to gain real expertise around this idea, it is best to see it in action across different programming languages and from the platform perspective. In this project, we would focus on the application perspective focusing on the language PHP
@@ -300,7 +301,7 @@ Artifactory is a product by JFrog that serves as a binary repository manager. Th
 vi .bash_profile 
 
 ##### paste the below in the bash profile
-export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
+export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which java)))))
 export PATH=$PATH:$JAVA_HOME/bin
 export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
 
@@ -1075,4 +1076,102 @@ result:
     ```
     - rerun the pipeline
 result:
+![Sonarqube](img/php-todo-pipeline-sonarqube-scanner-properties.png)
+
+-The quality gate we just included has no effect. Why? Well, because if you go to the SonarQube UI, you will realise that we just pushed a poor-quality code onto the development environment.
+
+Navigate to php-todo project in SonarQube
 ![Sonarqube](img/sonarqube-scanner-properties.png)
+
+There are bugs, and there is 0.0% code coverage. (code coverage is a percentage of unit tests added by developers to test functions and objects in the code)
+
+If you click on php-todo project for further analysis, you will see that there is 6 hours’ worth of technical debt, code smells and security issues in the code.
+
+In the development environment, this is acceptable as developers will need to keep iterating over their code towards perfection. But as a DevOps engineer working on the pipeline, we must ensure that the quality gate step causes the pipeline to fail if the conditions for quality are not met.
+
+### Conditionally deploy to higher environments
+In the real world, developers will work on feature branch in a repository (e.g., GitHub or GitLab). There are other branches that will be used differently to control how software releases are done. You will see such branches as:
+
+- Develop
+- Master or Main (The * is a place holder for a version number, Jira Ticket name or some description. It can be something like Release-1.0.0)
+- Feature/*
+- Release/*
+- Hotfix/
+
+There is a very wide discussion around release strategy, and git branching strategies which in recent years are considered under what is known as GitFlow. Assuming a basic gitflow implementation restricts only the develop branch to deploy code to Integration environment like sit.
+
+
+
+- Let us update our Jenkinsfile to implement this:
+    - First, we will include a When condition to run Quality Gate whenever the running branch is either develop, hotfix, release, main, or master
+    - Then we add a timeout step to wait for SonarQube to complete analysis and successfully finish the pipeline only when code quality is acceptable.
+
+```groovy
+stage('SonarQube Quality Gate') {
+      when { branch pattern: "^develop*|^hotfix*|^release*|^main*", comparator: "REGEXP"}
+        environment {
+            scannerHome = tool 'SonarQubeScanner'
+        }
+        steps {
+            withSonarQubeEnv('sonarqube') {
+                sh "${scannerHome}/bin/sonar-scanner -Dproject.settings=sonar-project.properties"
+            }
+            timeout(time: 1, unit: 'MINUTES') {
+                waitForQualityGate abortPipeline: true
+            }
+        }
+    }
+```
+To test, create different branches and push to GitHub. You will realise that only branches other than develop, hotfix, release, main, or master will be able to deploy the code.
+
+If everything goes well, you should be able to see something like this:
+
+![Sonarqube](img/php-todo-pipeline-sonarqube-quality-gate.png)
+
+Note: You might encounter the error below here's how to fix it:
+
+![error](img/error.png)
+```bash
+sudo apt install npm
+php --ini | grep xdebug
+```
+edit the configuration file and add the line
+```bash
+sudo nano /etc/php/7.4/cli/conf.d/20-xdebug.ini
+```
+```bash
+xdebug.mode=coverage
+```
+then restart php-fpm
+```bash
+sudo systemctl restart php7.4-fpm
+```
+and rerun the pipeline and you should get this
+![Sonarqube](img/php-todo-pipeline-sonarqube-quality-gate-result.png)
+
+- Now open sonarqube and you should see the results
+![Sonarqube](img/sonarqube-quality-gate-result.png)
+
+- Introduce Jenkins agents/slaves – Add 2 more servers to be used as Jenkins slave. Configure Jenkins to run its pipeline jobs randomly on any available slave nodes.
+    - Spin up 2 more servers
+    - Install Java on the servers
+    - Then open the .bash_profile file and add the following lines
+    ```bash
+    export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))
+    export PATH=$PATH:$JAVA_HOME/bin
+    export CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar
+    ```
+    - Then source the file
+    ```bash
+    source ~/.bash_profile
+    ```
+    - Then go to the jenkins dashboard > Manage Jenkins > Manage Nodes and Clouds > New Node
+    - Add the following details:
+        - Remote root directory: /home/ubuntu/
+        - Then save
+    ![Jenkins](img/jenkins-slave.png)
+
+    - When the agents are connected you should see this in the dashboard
+    ![Jenkins](img/jenkins-slave-connected.png)
+
+Note: the goal of jenkins slave is to shed load from the jenkins server to the slave servers
