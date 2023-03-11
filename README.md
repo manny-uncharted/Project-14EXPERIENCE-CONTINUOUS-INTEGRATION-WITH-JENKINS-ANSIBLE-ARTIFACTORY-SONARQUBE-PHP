@@ -1175,3 +1175,17 @@ and rerun the pipeline and you should get this
     ![Jenkins](img/jenkins-slave-connected.png)
 
 Note: the goal of jenkins slave is to shed load from the jenkins server to the slave servers
+
+- Now we need to configure webhooks for our repositories in Github to ensure that it monitors the repository for any changes and triggers the pipeline to run automatically.
+
+- Go to the repository in Github and click on settings
+- Then click on webhooks
+- Then add the url of the jenkins server
+```
+http://<Jenkins-Server-IP-address>:8080/github-webhook/
+```
+result:
+![Jenkins](img/github-webhook.png)
+
+### Conclusion
+In this article, we have covered how to configure a full ci/cd pipeline using Jenkins, SonarQube, and Artifactory. We have also covered how to configure a Jenkins slave to shed load from the Jenkins server to the slave servers.
